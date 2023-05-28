@@ -5,23 +5,78 @@
 Mentor: Shikhar Agrawal}
 \date{may 2023}
 \usepackage{xcolor}
-
+\usepackage{listings}
 \begin{document}
 \maketitle
-\section{Lecture \- 0}
+\section{Introduction}
 
 Bitcoin was introduced in 2009 by Satoshi Nakamoto in response to the 2008 global financial crisis and the need for a decentralized, peer-to-peer electronic cash system. 
 Nakamoto's vision was to create a currency free from central control, censorship-resistant, and capable of secure, borderless transactions.
 \subsection{Demand \& Supply of Bitcoin}
-We have to ensure that supply and demand of bitcoin must be regulated otherwise it may cause inflation, satoshi takes care of supply.
-Demand is regulated by market it is not controlled by anyone.
+Bitcoin's supply is regulated by Satoshi Nakamoto's algorithm, limiting the total number of bitcoins that can ever exist to 21 million.
+The demand for bitcoin is determined by market forces and influenced by factors such as investor sentiment and adoption. 
+Balancing supply and demand is essential for maintaining stability in the Bitcoin market and mitigating the risk of inflation.
 \subsection{Double Spend Problem}
-We have to ensure that money should be only spent once.
-Satoshi came up with an idea called ownership of bitcoin that everybody knows how much each owner has with the help of peer to peer netwoks.
-Satoshi also ensured that Anonymity between the owners i.e that they are known by public key.
-They use hash function to encode the transactions and mining purpose.
-Satoshi also came up with proof of work by which the bitcoin can be used as Cryptocurrency.
-Block chains are tamperproof transactions once added cannot be modified, each block in the blockchain has the hash of the previous block.
-Transactions are smart contracts in the block are executed one by one and update the ownership of bitcoin.
-smart contracts are peice of code in which money is spent by owner signature, popular smart contracts are eherium, ICO.
+Satoshi Nakamoto's design of Bitcoin ensures that money can only be spent once through the concept of ownership and peer-to-peer networks. With public keys, everyone can know how much each owner possesses while maintaining anonymity. 
+Hash functions are used for encoding transactions and mining purposes, while proof of work enables Bitcoin to function as a cryptocurrency. 
+The tamper-proof nature of blockchain ensures that once transactions are added, they cannot be modified, and each block in the blockchain contains the hash of the previous block.
+Smart contracts are self-executing contracts with the terms of the agreement directly written into code, automating and enforcing the agreed-upon conditions without the need for intermediaries. 
+They enable secure and transparent transactions in various applications, from finance to supply chain management.
+\section{Motivation}
+\subsection{Blockchains in High Level}
+\begin{itemize}
+    \item Blockchain utilizes a tamperproof data structure that ensures data integrity and security.
+    \item Starting with a genesis block, each subsequent block in the chain holds information in the form of bitstrings or binary representations.
+    \item Once data is added to a block and appended to the chain, it becomes immutable and cannot be removed or altered.
+    \item This feature of blockchain, along with its decentralized and distributed nature enables various applications such as cryptocurrency, smart contracts and trust.
+\end{itemize}
+\subsection{Applications}
+\begin{itemize}
+    \item \textbf{Governance}: Land records, health records, transportation data, virtual currency, electronic wills, passport, identification, etc.
+    \item \textbf{Commercial}: supply chains, auctions, gaming, sale of music, financial services, smart grid etc.
+    \item \textbf{Disruptive}: Cryptocurrencies, Initial Coin Offerings
+\end{itemize}
+\section{cryptocurrency}
+Bitcoin has no central trudtrd authority, cryptography brings in trust and peer to peer networks provide decentralization. Bitcoin satisfies the characteristics of acceptability, portability, durability, divisibility, and fungibility.
+\begin{itemize}
+\item \textbf{Acceptability}: Bitcoin is widely accepted as a form of payment and store of value.
+\item \textbf{Portability}: Bitcoin can be easily transferred and accessed across geographical boundaries.
+\item \textbf{Durability}: Bitcoin's digital nature makes it resistant to physical damage or deterioration.
+\item \textbf{Divisibility}: Bitcoin is divisible into small units, allowing for precise transactions of any value.
+\item \textbf{Fungibility}: Bitcoin units are interchangeable, meaning that each unit holds the same value and can be exchanged without distinction.
+\end{itemize}
+Each transaction is brodcasted among all so that double spend is avoided. \\
+Consensus protocols are mechanisms used in blockchain networks to achieve agreement among participants on the validity of transactions and the order in which they are added to the blockchain and this is also know as proof of work.
+\section{Peer to Peer}
+A permissionless, distributed system allows an arbitrary number of participants to join or leave at any time, enabling seamless peer-to-peer transactions where individuals have the freedom to pay anyone within the network, fostering inclusivity and decentralization.
+\subsection{Consensus Protocol}
+\begin{itemize}
+\item To establish consensus in a protocol, cryptography is employed to secure transactions and validate the integrity of the data. 
+\item While a peer-to-peer network enables direct communication and information sharing among participants. 
+\item The proof-of-work mechanism adds a layer of computational effort to validate transactions and prevent malicious behavior, and Merkle trees provide an efficient and verifiable way to store and verify the integrity of large sets of data within the blockchain. 
+\item Together, these components form the foundation for a robust and trustless consensus protocol.
+\end{itemize}
+\subsection{Popular P2P versions}
+\subsubsection{Napster}
+Napster was one of the earliest peer-to-peer networks that facilitated file sharing. It used a centralized server to maintain an index of available files, allowing users to search and download files directly from each other, enabling widespread file sharing but faced legal challenges due to copyright concerns.
+\subsubsection{Gnutella}
+Gnutella is a decentralized peer-to-peer network where participating nodes connect directly with each other. It operates on a query flooding mechanism, where search queries propagate across the network, and peers respond with matching files, ensuring a distributed and scalable file sharing system.
+\subsubsection{Distributed Hash Table}
+DHT is a decentralized peer-to-peer network architecture that provides efficient lookup and storage of key-value pairs. It operates by partitioning the hash space among participating nodes, enabling direct lookup and storage of data based on keys. DHTs provide fault tolerance, scalability, and efficient resource utilization in distributed systems and are commonly used in applications like BitTorrent and distributed storage systems.
+\section{Hash functions}
+Each block in the blockchain contains hash of the previous block, the hash is recognised as an unique ID.
+\subsection{Basic properties of Hash functions}
+\begin{itemize}
+    \item Input to the hash function can be of any length.
+    \item Output of the hash function should be of fixed size.
+    \item Hah should be efficiently computed.
+\end{itemize}
+\subsection{Random Oracle}
+It is like a black box that takes input and generates a random output based on that input. It provides a consistent and unpredictable response to any query. Random oracles are often used to model idealized cryptographic functions and serve as a building block for designing secure protocols and systems. \\
+However, in practice, real-world hash functions are used as a substitute for random oracles.
+\subsection{Properties of Cryptographic Hash functions}
+\subsubsection{Collision Resistence}
+Collision resistance, in the context of cryptographic hash functions, means that it is computationally infeasible to find two different inputs that produce the same hash output. It ensures that a small change in the input will result in a significantly different hash value, making it difficult to forge or manipulate data without detection. \\
+The birthday paradox states that in a group of relatively few people, the probability of two individuals sharing the same birthday is surprisingly high.
+\subsubsection{Hiding}
 \end{document}
