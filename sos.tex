@@ -5,9 +5,17 @@
 Mentor: Shikhar Agrawal}
 \date{may 2023}
 \usepackage{xcolor}
+\usepackage{titlesec}
 \usepackage{listings}
+\usepackage{tikz}
+\usepackage{amsmath}
+\usepackage{hyperref}
+\usepackage{tocloft}
+\renewcommand{\cftsecleader}{\cftdotfill{\cftdotsep}} % Add dots between section title and page number
 \begin{document}
 \maketitle
+\tableofcontents
+\newpage
 \section{Introduction}
 
 Bitcoin was introduced in 2009 by Satoshi Nakamoto in response to the 2008 global financial crisis and the need for a decentralized, peer-to-peer electronic cash system. 
@@ -79,4 +87,30 @@ However, in practice, real-world hash functions are used as a substitute for ran
 Collision resistance, in the context of cryptographic hash functions, means that it is computationally infeasible to find two different inputs that produce the same hash output. It ensures that a small change in the input will result in a significantly different hash value, making it difficult to forge or manipulate data without detection. \\
 The birthday paradox states that in a group of relatively few people, the probability of two individuals sharing the same birthday is surprisingly high.
 \subsubsection{Hiding}
+suppose r takes values from $r_1$, $r_2$, $r_3$, ....., $r_n$ with probability  $p(r_1)$, $p(r_2)$, $p(r_3)$, ....., $p(r_n)$. \\
+The minimum entropy is defined as follows 
+$$min-entropy = min_{i=1}^{n} -log(x_i)$$
+where a secret value r is chosen from a probability distribution with high min-entropy and combined with another value x to compute the hash h(x\textbar\textbar r), it is infeasible to find the original value of x given only the hash h(x\textbar\textbar r). \\
+\subsubsection{Puzzle Friendliness}
+Hash function is puzzle friendly if for every N bit output Y if K is choosen from a probability distribution with high minimum entropy, then it is infeasible to find X such that 
+$$H(K||X) = Y$$
+in time significantly less than O($2^N$).
+\subsection{Proof of Work}
+\begin{itemize}
+\item Miner selects pending transactions.
+\item Miner combines hash of previous block, nonce, and transactions.
+\item Nonce is of 16 bits, miner can include any number of transactions.
+\item Miner adjusts nonce until the resulting block hash meets the threshold for network consensus, creating the next block.
+\item Once a valid block is created it should be brodcasted to other miners for verification.
+\end{itemize}
+\section{SHA256 and Merkle Trees}
+Here's a high-level overview of how SHA-256 works:
+\begin{itemize}
+\item \textbf{Padding}: The input message is padded with length of message to ensure it meets certain requirements for the SHA-256 algorithm. Padding includes adding bits to the message to make it a multiple of 512 bits.
+\item \textbf{Initialization}: An Initialization Vector (IV) is a predetermined set of initial values used to initialize the compression process in certain compression algorithms, ensuring consistent and reproducible compression results for the same input data.
+\item \textbf{Processing}: The padded message is divided into blocks of 512 bits, and the algorithm processes each block sequentially. The processing involves a series of logical and bitwise operations, including message expansion, data mixing, and bitwise operations such as AND, OR, and XOR.
+\item \textbf{Compression}: Each block is compressed using a combination of logical and bitwise operations, updating the state of the hash values.
+\item \textbf{Finalization}: Once all the blocks have been processed, the resulting hash value is obtained by concatenating the updated hash values.
+\end{itemize}
+
 \end{document}
