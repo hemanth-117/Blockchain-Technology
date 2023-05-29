@@ -112,5 +112,45 @@ Here's a high-level overview of how SHA-256 works:
 \item \textbf{Compression}: Each block is compressed using a combination of logical and bitwise operations, updating the state of the hash values.
 \item \textbf{Finalization}: Once all the blocks have been processed, the resulting hash value is obtained by concatenating the updated hash values.
 \end{itemize}
-
+Miners use Merkle trees (also known as Merkle hash trees) as an efficient and secure way to summarize a large set of transactions within a blockchain. These trees play a crucial role in the creation of the next block in the blockchain. Let's walk through the process:
+\begin{itemize}
+    \item Miners gather valid transactions and sort them. They hash each transaction individually and combine the hashed values in pairs until a single root hash, known as the Merkle root, remains at the top of the tree.
+    \item The Merkle root is included in the block header along with other block information. Miners attempt to find a nonce value that, when hashed with the block header, produces a hash that is less than the threshold.
+\end{itemize}
+\subsection{Advantages of Merkle Trees}
+\begin{itemize}
+    \item Merkle trees enable efficient verification and tamper detection, making it difficult for a miner to modify a specific transaction without changing the Merkle root.
+    \item If a miner want to add or Modify a transaction while solving the puzzle it can be done in O(log(M)) operations where M is no of transactions included.
+    \item Light clients(New commer of Bitcoin) require fewer resources, enabling users with limited capabilities to participate in blockchain networks.
+\end{itemize}
+\subsection{Prooving to Light Client}
+There is a situation that A is a light clinet and B need to proove that one of his transaction happend to C to A then B can provide A with a compact proof known as a Merkle proof. \\
+This proof consists of the transaction, its corresponding Merkle path, and the Merkle root. A can then verify the validity of the transaction by using the Merkle proof to trace the transaction's inclusion in the Merkle tree and comparing the computed Merkle root with the one stored by A.
+\subsection{Full Client using Merkle Trees}
+If a full client want to discard any of the transaction he stored he can still proove that remaing transactions belonging to the same merkle tree which may not be happend if he stores in a naive way i.e concatenating all the transactions.
+\section{Bitcoin Transactions}
+\subsection{Block Header contents}
+The block header in a blockchain typically contains the following elements:
+\begin{itemize}
+    \item \textbf{Previous Block Hash}: Hash of the preceding block in the blockchain.
+    \item \textbf{Merkle Root}: Hash of all the transactions included in the block.
+    \item \textbf{Timestamp}: The time when the block was created, which is used after to find appropriate threshold.
+    \item \textbf{Nonce}: A number used in the mining process to find a valid block hash.
+    \item \textbf{threshold}: 4 Bytes are used to represnt threshold also known as bits, to save space instead of storing 256 bits.
+    $$bits = b_1b_2b_3b_4$$
+    $$Threshold = b2_2b_3b_4 * 256^{b_1 - 3}$$
+\end{itemize}
+\subsection{Digital Signatures}
+Digital Signatures are hard to forge, easy to create and easy to verify. \\
+These signatures use the below three alogorithms to complete the need:
+\subsubsection{Generation of shared, public key pair}
+This uses GenerateKeys algorithm which takes key size as the parameter and generates a key pair in which shared key is kept secret and public key is known to everyone.
+\subsubsection{sign the message}
+This uses Sign algorithm which takes message and shared key as the algorithm and encypts the message, in this case message is typically a transaction. 
+\subsubsection{verify the signature}
+This uses Verify algorithm which takes the message, signature and cipher text and verify the signature, this is done by everyone to verify transactions.
+\subsection{ECDSA}
+Elliptic Curve Digital Signature Algorithm is a cryptographic algorithm used for generating and verifying digital signatures, in which public key is 512 bits, shared key is 256 bits, signature is 512 bits and the message should be 256 bits.\\
+Hash the message using SHA256 as many of the messages are not of 256 bits.
+\section{Transactions}
 \end{document}
