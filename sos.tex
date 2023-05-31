@@ -1,4 +1,4 @@
-\documentclass{report}
+\documentclass{article}
 \title{Blockchain Technology SoS Reading Project}
 
 \author{Pagoti Hemanth Naidu - 210050117 \\
@@ -11,8 +11,20 @@ Mentor: Shikhar Agrawal}
 \usepackage{amsmath}
 \usepackage{hyperref}
 \usepackage{tocloft}
+\usepackage{tikz}
+\usetikzlibrary{shapes,arrows,calc,arrows.meta}
+\usepackage{amsmath,bm,times}
+\newcommand{\mx}[1]{\mathbf{\bm{#1}}} % Matrix command
+\newcommand{\vc}[1]{\mathbf{\bm{#1}}} % Vector command
 \renewcommand{\cftsecleader}{\cftdotfill{\cftdotsep}} % Add dots between section title and page number
 \begin{document}
+\tikzstyle{sensor}=[draw, fill=blue!20, text width=5em, 
+text centered, minimum height=2.5em]
+\tikzstyle{ann} = [above, text width=6em]
+\tikzstyle{naveqs} = [sensor, text width=6em, fill=red!20, 
+minimum height=12em, rounded corners]
+\def\blockdist{2.3}
+\def\edgedist{1}
 \maketitle
 \tableofcontents
 \newpage
@@ -153,4 +165,49 @@ This uses Verify algorithm which takes the message, signature and cipher text an
 Elliptic Curve Digital Signature Algorithm is a cryptographic algorithm used for generating and verifying digital signatures, in which public key is 512 bits, shared key is 256 bits, signature is 512 bits and the message should be 256 bits.\\
 Hash the message using SHA256 as many of the messages are not of 256 bits.
 \section{Transactions}
+Assume A($SK_A,PK_A$) want to pay B($SK_B,PK_B$),  A has to make a transaction himself and sigh it with his shared key as discussed above. \\
+Now the problem is how a miner verify this transaction is valid or not.
+\subsection{Structure of bitcoin transactions}
+\begin{center}
+\begin{tikzpicture}[>={Latex[scale=1.5]}]
+    %% Encoder
+    \node (naveq) [naveqs] {Transaction};
+    %% Inputs
+    \draw[<-] ($(naveq.south west)!0.9!(naveq.north west)$) -- +(-\edgedist,0) node [left] {$(SK^{i}_0,PK^{i}_0)$};
+    \draw[<-] ($(naveq.south west)!0.75!(naveq.north west)$) -- +(-\edgedist,0) node [left] {$(SK^{i}_1,PK^{i}_1)$};
+    \draw[<-] ($(naveq.south west)!0.6!(naveq.north west)$) -- +(-\edgedist,0) node [left] {$(SK^{i}_2,PK^{i}_2)$};
+    \draw[<-] ($(naveq.south west)!0.45!(naveq.north west)$) -- +(-\edgedist,0) node [left] {$(SK^{i}_3,PK^{i}_3)$};
+    \draw[<-] ($(naveq.south west)!0.30!(naveq.north west)$) -- +(-\edgedist,0) node [left] {$(SK^{i}_4,PK^{i}_4)$};
+    \draw[<-] ($(naveq.south west)!0.15!(naveq.north west)$) -- +(-\edgedist,0) node [left] {$(SK^{i}_5,PK^{i}_5)$};
+    %% Outputs
+    \draw[->] ($(naveq.south east)!0.9!(naveq.north east)$) -- +(\edgedist,0) node [right] {$(SK^{o}_0,PK^{o}_0)$};
+    \draw[->] ($(naveq.south east)!0.75!(naveq.north east)$) -- +(\edgedist,0) node [right] {$(SK^{o}_1,PK^{o}_1)$};
+    \draw[->] ($(naveq.south east)!0.6!(naveq.north east)$) -- +(\edgedist,0) node [right] {$(SK^{o}_2,PK^{o}_2)$};
+    \draw[->] ($(naveq.south east)!0.45!(naveq.north east)$) -- +(\edgedist,0) node [right] {$(SK^{o}_3,PK^{o}_3)$};
+    \draw[->] ($(naveq.south east)!0.3!(naveq.north east)$) -- +(\edgedist,0) node [right] {$(SK^{o}_4,PK^{o}_4)$};
+    \draw[->] ($(naveq.south east)!0.15!(naveq.north east)$) -- +(\edgedist,0) node [right] {$(SK^{o}_5,PK^{o}_5)$};
+  \end{tikzpicture}
+\end{center}
+Inputs are taken from earlier outputs of Bitcoin transactions, which consists hash of the transaction and index of the Block in which the transaction is present and some other feilds. Output pay Bitcoin to different public keys, each imput may correspond to multiple outputs. Reaming Bitcoin can be payed to himself by generating a new key pair, the transactions should be signed by shared keys of all inputs of the transaction.
+\subsubsection{Transaction fee}
+Transaction fees in Bitcoin are small amounts of Bitcoin paid by the sender of a transaction to incentivize miners to include and confirm the transaction on the network. The fee amount varies based on network congestion and transaction size. \\
+If a sender wants to pay 1\% of his output as Transaction fee he decreases the output by 1\%. 
+\subsubsection{Rules}
+\begin{itemize}
+    \item Output should not be negative in a transaction.
+    \item sum of inputs must be greater than or equal to sum of outputs ina transaction.
+    \item Whoever miner solves the puzzle can claim all the fee of the transcations he included and the mining fee.  
+\end{itemize}
+\subsection{Mining}
+Miner selects some of the pending transactions, compute merkle root and djusts nonce until the resulting block hash meets the threshold for net-
+work consensus, creating the next block.
+\subsubsection{Coinbase transaction}
+This the first transaction in which the miner claims the transaction fee and the mining reward, this transaction will not have any inputs it can create bitcoin i.e mining reward, which decreases exponentially so that no inflation occurs. Miner can claim his reward if he wins the game by creating next block.
+\subsection{Double spend prevention}
+There are set of rules which should be followed by miners so that double spend can be prevented these follows:
+\begin{itemize}
+    \item Any output of a transaction should be only spend once, such outputs are calles UTXO(Unspend Transaction Output).
+    \item If any miner includes invalid transaction and succeeded in creating new block every other miner should discard that block.
+    \item When a miner creates a block with all valid transactions every other miner should delete the transaction which are in the new block from their respective transaction pool.
+\end{itemize}
 \end{document}
