@@ -5,6 +5,8 @@
 Mentor: Shikhar Agrawal}
 \date{may 2023}
 \usepackage{xcolor}
+\usepackage{graphicx}
+\usepackage{adjustbox}
 \usepackage{titlesec}
 \usepackage{listings}
 \usepackage{tikz}
@@ -12,6 +14,7 @@ Mentor: Shikhar Agrawal}
 \usepackage{hyperref}
 \usepackage{tocloft}
 \usepackage{tikz}
+\usetikzlibrary{positioning}
 \usetikzlibrary{shapes,arrows,calc,arrows.meta}
 \usepackage{amsmath,bm,times}
 \newcommand{\mx}[1]{\mathbf{\bm{#1}}} % Matrix command
@@ -164,10 +167,10 @@ This uses Verify algorithm which takes the message, signature and cipher text an
 \subsection{ECDSA}
 Elliptic Curve Digital Signature Algorithm is a cryptographic algorithm used for generating and verifying digital signatures, in which public key is 512 bits, shared key is 256 bits, signature is 512 bits and the message should be 256 bits.\\
 Hash the message using SHA256 as many of the messages are not of 256 bits.
-\section{Transactions}
+\subsection{Transactions}
 Assume A($SK_A,PK_A$) want to pay B($SK_B,PK_B$),  A has to make a transaction himself and sigh it with his shared key as discussed above. \\
 Now the problem is how a miner verify this transaction is valid or not.
-\subsection{Structure of bitcoin transactions}
+\subsubsection{Structure of bitcoin transactions}
 \begin{center}
 \begin{tikzpicture}[>={Latex[scale=1.5]}]
     %% Encoder
@@ -198,16 +201,61 @@ If a sender wants to pay 1\% of his output as Transaction fee he decreases the o
     \item sum of inputs must be greater than or equal to sum of outputs ina transaction.
     \item Whoever miner solves the puzzle can claim all the fee of the transcations he included and the mining fee.  
 \end{itemize}
-\subsection{Mining}
+\subsubsection{Mining}
 Miner selects some of the pending transactions, compute merkle root and djusts nonce until the resulting block hash meets the threshold for net-
 work consensus, creating the next block.
 \subsubsection{Coinbase transaction}
 This the first transaction in which the miner claims the transaction fee and the mining reward, this transaction will not have any inputs it can create bitcoin i.e mining reward, which decreases exponentially so that no inflation occurs. Miner can claim his reward if he wins the game by creating next block.
-\subsection{Double spend prevention}
+\subsubsection{Double spend prevention}
 There are set of rules which should be followed by miners so that double spend can be prevented these follows:
 \begin{itemize}
     \item Any output of a transaction should be only spend once, such outputs are calles UTXO(Unspend Transaction Output).
-    \item If any miner includes invalid transaction and succeeded in creating new block every other miner should discard that block.
+    \item If any miner includes invalid transaction and succeeded in creating new block every other miner should discard that block, if the block is in some chain the chain is also discarded.
     \item When a miner creates a block with all valid transactions every other miner should delete the transaction which are in the new block from their respective transaction pool.
 \end{itemize}
+From the above miner can also change some arbitrary feilds in the coinbase transaction to complete the proof of work. \\
+The length of block header is 80 bytes, satoshi managed to keep it small.
+\section{Target Threshold}
+If the threshold is set too small it takes miners so much time to complete the proof of work as it takes so many trails, if it is set too large then forks may appear insted of chain we will have trees. Target threshold should not be to large or small.  \\
+Network delays while broadcasting block for verification should not be large because it may cause forks in the blockchain.
+\subsection{Network propagation}
+\begin{center}
+    \begin{tikzpicture}
+        % Define the nodes
+        \node[draw, circle] (node1) {Miner 1};
+        \node[draw, circle, right=6cm of node1] (node2) {Miner 2};
+        
+        % Draw the link
+        \draw[<->, shorten >=3pt, shorten <=3pt] (node1) -- node[above] {Distance $d$, Data rate = $k$ Mbps} (node2);
+    \end{tikzpicture}   
+\end{center}
+When miner 1 computes a block and want to transmit to miner 2 the delay is $\frac{d}{c}+\frac{b}{k}$, where b is the length of block size. Miner 2 verifies the block and broadcast it. \\
+So the total time taken for end to end propagation of the block in peer to peer network is given below:
+$$\sum_{i=1}^{n}\frac{d_i}{c}+\frac{b}{k_i}+p_i$$
+where $p_i$ is the time taken for verification of the block, and the links are selected by the spanning tree algorithm for avoiding multiple transfers.
+\subsection{How threshold is set}
+Thers should be no situation like some miner solves proof of work while other miner broadcasting his bolck, it may lead to forks and double spend. So threshold is choosen such that each block takes 10 minutes to create. \\
+The threshold cannot be constant becuase as the users of bitcoin increase the hashing power increases, so satoshi decided to update threshold every 2 weeks based on hashing power. Users use \textbf{A6} hardware for solving proof of work. This 2 weeks is defined in terms of no of blocks, in 2 weeks roughly 2016 blocks were created. \\
+So threshold is updated after every 2016 blocks as follows:
+$$threshold = threshold * \frac{T}{1209600}$$
+T is Time taken for creation of prev 2016 blocks in sec, T can be found using timestamp in block header as follows:
+$$T = timestamp(B_{2016n-1}) - timestamp(B_{2016(n-1)})$$
+\subsection{Verification}
+Ideally miner should follow \textbf{NTP} for the timestamp while solving proof of work.
+\subsubsection{Rules for verification}
+Miner accepts the recived block if:
+$$t_k > median(t_{k-1},t_{k-2},t_{k-3}...... t_{k-11})$$
+$$t_k < 2hours + Netwok adjust time$$
+Nwtwok adjust time is defined as sum of miner local time according to NTP plus the median of the offsets with local times of his fellow peers.
+\subsection{Deal with forks}
+Satoshi's first rules were to slect longest chain if forks are present, if multiple longest chains were present should select the one with less timestamp.
+\subsubsection{Chain weight}
+If some attacker manages to create longest chain privately and broadcast afte he may kill the honest blocks to avoid this chain weight was used. \\
+Chain weight uses the sum of expected work done for all the blocks
+in the chain, if it is built using fake timestamps he may get caught.
+expected work for creating i'th block is calculated as follows:
+$$B_i = \lfloor \frac{2^{256}}{Threshold + 1} \rfloor$$
+expected work for creating entire chain is calculated as follows:
+$$\sum_{i=1}^{n}B_i$$
+\section{Confirmation Time}
 \end{document}
