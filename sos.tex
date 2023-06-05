@@ -14,6 +14,7 @@ Mentor: Shikhar Agrawal}
 \usepackage{hyperref}
 \usepackage{tocloft}
 \usepackage{tikz}
+\usetikzlibrary{automata,positioning}
 \usetikzlibrary{positioning}
 \usetikzlibrary{shapes,arrows,calc,arrows.meta}
 \usepackage{amsmath,bm,times}
@@ -338,7 +339,7 @@ From this we can conclude that when the transaction is broadcasted to the miners
 The number of blocks created in an interval of T is suprisingly poisson distribution given as 
 $$P\left( A_{T} = n \right) = \frac{{e^{ - \beta*t } (\beta *t) ^n }}{{n!}}$$
 \subsection{ 51\% Attack}
-let P be the fraction of hashing power with honest miners, $q = 1 - p $ be the hashing power with attackers, if $q > 0.5$ then attacker can always kill the chain of honest block.This attack is know as 51\% attack. \\
+let p be the fraction of hashing power with honest miners, $q = 1 - p $ be the hashing power with attackers, if $q > 0.5$ then attacker can always kill the chain of honest block.This attack is know as 51\% attack. \\
 The naive solution of this attack is to crete checkpoints is that slect a block which is deep enough in the chain must be present in the chain always, checkpoints are updated during a period of time. \\
 It is very difficult to acheive more than 50\% of hashing power.
 if attacker creates after time y and honest miner after x then probabilty of attacker winning the game is:
@@ -348,4 +349,134 @@ if attacker creates after time y and honest miner after x then probabilty of att
       &= 1 - p \\
       & = q
 \end{align*}
+\section{Satoshi's analysis}
+We want to know the number of confirmations user should wait such that his transaction will be in the blockchain forever. \\
+When the transaction is about to enter the block chain attacker may be ahead or behind the honest miners.\\
+If attacker is behind the honest miners he should try create more blocks to kill the honest chain, if is ahead he will be wait until the transaction entered the block and releases the chain.\\
+\begin{figure}
+\centering
+  \begin{tikzpicture}[node distance=1cm, auto]
+    % Nodes
+    \node [draw, rectangle, fill=blue!20] (block1) {$B_1$};
+    \node [draw, rectangle, fill=blue!20, right of=block1] (block2) {$B_2$};
+    \node [draw, rectangle, fill=blue!20, right of=block2] (block3) {$B_3$};
+    \node [draw, rectangle, fill=blue!20, right of=block3] (block4) {$B_4$};
+
+    \node [draw, rectangle, fill=red!20, below of=block2] (a2) {$A_2$};
+    \node [draw, rectangle, fill=red!20, right of=a2] (a3) {$A_3$};
+    \node [draw, rectangle, fill=red!20, right of=a3] (a4) {$A_4$};
+    \node [draw, rectangle, fill=red!20, right of=a4] (a5) {$A_5$};
+    % Arrows
+    \draw [->] (block1) -- (block2);
+    \draw [->] (block2) -- (block3);
+    \draw [->] (block3) -- (block4);
+    \draw [->] (block1) -- (a2);
+    \draw [->] (a2) -- (a3);
+    \draw [->] (a3) -- (a4);
+    \draw [->] (a4) -- (a5);
+    \draw [dotted] (block4) -- (a5);
+  \end{tikzpicture}
+  \caption{attacker is ahead of honest miners}
+\end{figure}
+\begin{figure}
+\centering
+  \begin{tikzpicture}[node distance=1cm, auto]
+    % Nodes
+    \node [draw, rectangle, fill=blue!20] (block1) {$B_1$};
+    \node [draw, rectangle, fill=blue!20, right of=block1] (block2) {$B_2$};
+    \node [draw, rectangle, fill=blue!20, right of=block2] (block3) {$B_3$};
+    \node [draw, rectangle, fill=blue!20, right of=block3] (block4) {$B_4$};
+
+    \node [draw, rectangle, fill=red!20, below of=block2] (a2) {$A_2$};
+    \node [draw, rectangle, fill=red!20, right of=a2] (a3) {$A_3$};
+    % Arrows
+    \draw [->] (block1) -- (block2);
+    \draw [->] (block2) -- (block3);
+    \draw [->] (block3) -- (block4);
+    \draw [->] (block1) -- (a2);
+    \draw [->] (a2) -- (a3);
+    \draw [dotted] (block4) -- (a3);
+  \end{tikzpicture}
+  \caption{attacker is behind the honest miners}
+\end{figure}
+Satoshi assumed that network delay is zero and observed the attacker's lead with time.
+\begin{center}
+\begin{tikzpicture}
+  % Draw x-axis
+  \draw[->] (0,0) -- (11,0) node[right] {time};
+  
+  % Draw y-axis with label
+  \draw[->] (0,0) -- (0,6) node[above] {Attackers lead};
+  
+  % Draw your points and join them with straight lines
+  \draw plot[const plot, mark=*, mark size=2pt] coordinates{(0,1) (1,2) (2,1) (3,3) (4,2)(5,6)(6,5)(7,4)(8,3)(9,2)(10,0)};
+  \node[above right] at (5,6) {$Z$};
+  \node[above right] at (5,0) {$S$};
+  \node[above right] at (10,0) {$A$};
+  % Draw the dotted line
+  \draw[dotted] (5,0) -- (5,5);
+\end{tikzpicture}
+\end{center}
+From the above picture Z can be in the range $(-\infty, S)$, where S is indicating S'th confirmation, we also have to see after S if he can win at some point like A in above in future. S, A location is variable it can happen anywhere and it affects the value of Z.
+\subsection{Meni Rosenfeld discrete analysis}
+We will be marking points at which blocks were created and observe it when S number of blocks are created by honest miners.
+\begin{center}
+    \begin{tikzpicture}
+  % Draw x-axis
+  \draw[-latex] (0,0) -- (7,0) node[right] {$Time$};
+
+% Add text above x-axis
+  \node[above] at (0,2) {Honest};
+  
+  % Add text below x-axis
+  \node[below] at (0,-2) {Attacker};
+  
+  % Draw lines in positive y-direction
+  \draw (1,0) -- (1,2);
+  \draw (2,0) -- (2,2);
+  \draw (4,0) -- (4,2);
+  
+  % Draw lines in negative y-direction
+  \draw (3,0) -- (3,-2);
+  \draw (5,0) -- (5,-2);
+  \draw (6,0) -- (6,2);
+  
+  % Add label "S" for the last line in positive y-direction
+  \draw (6,0) -- (6,2) node[midway, right] {S};
+  \draw (5,0) -- (5,-2) node[midway, right] {X};
+\end{tikzpicture}
+\end{center}
+If the honest miners are ahead of Z blocks at the S'th confirmation,
+$$X = S - Z$$
+we have to calculate the probabilty that honest miners have lead Z  at S'th confirmation, 
+$$P_{Z,S} = Prob((S -X = Z) | (Honest = S) )$$
+Also the attacker catching up the lead Z as $Q_{Z}$. \\
+Probability that attacker catches up after S honest blocks,
+$$R_{S} = \sum_{-\infty}^{S}P_{Z,S}*Q_{Z}$$
+$$P_{Z,S} = \binom{2*S - Z - 1}{S - 1}*P^{S}*Q^{S-Z}$$
+For finding $Q_Z$ we should perform random walk as there are many possibilities to catch up the lead, this can analysed by an simple automeata as below, 
+\begin{center}
+\begin{tikzpicture}[shorten >=1pt,node distance=2cm,on grid,auto] 
+   \node[state,initial] (q_0)   {$Z$}; 
+   \node[state] (q_1) [above right=of q_0] {$Z+1$}; 
+   \node[state] (q_2) [below right=of q_0] {$Z-1$}; 
+   \node[state,accepting](q_3) [below right=of q_1] {$0$};
+    \path[->] 
+    (q_0) edge  node {p} (q_1)
+          edge  node [swap] {q} (q_2)
+    (q_1) edge  node  {$Q_{Z+1}$} (q_3)
+    (q_2) edge  node [swap] {$Q_{Z+1}$} (q_3) ;
+\end{tikzpicture}    
+\end{center}
+So for $Z > 0$,
+$$Q_Z = P*Q_{Z+1} + q*Q_{Z-1}$$
+on solving, 
+\[
+Q_{Z} =
+\begin{cases}
+(\frac{q}{p})^{Z} & \text{if } Z \geq 0 \\
+1 & \text{if } Z < 0 \\
+\end{cases}
+\]
+The above $Q_{Z}$ is only true if $ q < p $, else $Q_{Z}$ is always 1 which leads to 51\% attack.
 \end{document}
