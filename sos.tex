@@ -258,4 +258,94 @@ $$B_i = \lfloor \frac{2^{256}}{Threshold + 1} \rfloor$$
 expected work for creating entire chain is calculated as follows:
 $$\sum_{i=1}^{n}B_i$$
 \section{Confirmation Time}
+The confirmation time in blockchain refers to the amount of time it takes for a transaction to be validated and included in a block on the blockchain. The specific confirmation time can vary depending on the blockchain network and its consensus mechanism.\\
+\textbf{Zero Confirmation}: A transaction that has been broadcasted but not yet added to a block or confirmed by the network.\\
+\textbf{First Confirmation}: The first block in which a transaction is included, indicating its confirmation on the blockchain.\\
+\textbf{Second Confirmation}: The second block in which a transaction is included, further validating its confirmation on the blockchain and increasing the level of confidence in its permanence.
+\newpage
+\begin{figure}
+\centering
+  \begin{tikzpicture}[node distance=2cm, auto]
+    % Nodes
+    \node [draw, rectangle, fill=blue!20] (block1) {$B_1$};
+    \node [draw, rectangle, fill=blue!20, right of=block1] (block2) {$B_2$};
+    \node [draw, rectangle, fill=blue!20, right of=block2] (block3) {$B_3$};
+    \node [draw, rectangle, fill=blue!20, right of=block3] (block4) {$B_4$};
+
+    \node [draw, rectangle, fill=red!20, below of=block2] (a2) {$A_2$};
+    \node [draw, rectangle, fill=red!20, right of=a2] (a3) {$A_3$};
+    \node [draw, rectangle, fill=red!20, right of=a3] (a4) {$A_4$};
+    \node [draw, rectangle, fill=red!20, right of=a4] (a5) {$A_5$};
+
+    % Arrows
+    \draw [->] (block1) -- (block2);
+    \draw [->] (block2) -- (block3);
+    \draw [->] (block3) -- (block4);
+    \draw [->] (block1) -- (a2);
+    \draw [->] (a2) -- (a3);
+    \draw [->] (a3) -- (a4);
+    \draw [->] (a4) -- (a5);
+  \end{tikzpicture}
+\end{figure}
+\subsection{Double spend attack}
+This attack was analysed by Satoshi himself, the above diagram shows the attack after $B_1$, so attacker creates another chain privately after $B_1$ to create double spend and kill the chain created by honest miners. \\
+He creates until the other user confirms, i.e if the user waits till 3rd confirmation and attacker broadcast the transaction between $B_1$ and $B_2$, so the user checks if it is in $B_4$ are not, so attacker releases the chain after $A_5$ is created before $b_5$, otherwise he may not.
+\begin{center}
+\begin{tikzpicture}
+    \coordinate (start) at (0,0); % Starting point
+    \coordinate (end) at (6,0); % Ending point
+    
+    % Add height to the first and last coordinate
+    \coordinate (p1) at (start |- 0,2);
+    \coordinate (p2) at (end |- 0,2);
+    
+    \draw (p1) -- (start) -- (end) -- (p2); % Draw the line with added height
+    
+    \pgfmathsetmacro{\n}{5} % Number of divisions
+    
+    \foreach \i in {2,...,\n}{
+        \pgfmathsetmacro{\x}{(\i-1)/\n*6} % Calculate the x-coordinate for each division point
+        \coordinate (division\i) at (\x,0); % Store the division point as a coordinate
+        \draw (division\i) -- +(0,0.22); % Draw a vertical line indicating the division
+        \pgfmathsetmacro{\x}{\i-1}
+        \node[below] at (division\i) {$\x*\delta$}; % Label each division point
+    }
+    
+    % Label the first and last coordinates
+    \node[above] at (p1) {$B_K$};
+    \node[above] at (p2) {$B_{K+1}$};
+\end{tikzpicture}
+\end{center}
+\subsubsection{Inter arrival time of blocks}
+We want the distribution of seperation time between each block, let us say that we divided time into intervals of $\delta$ each and $\beta$ is hashing power available. \\
+The probabilty that a block is created in the time interval $\delta$ is $\beta\delta$, let us denote the inter arrival time as I so,
+$$P[I = n\delta ] = (1 - \beta\delta)^{n-1}\beta\delta$$
+$$P[I > n\delta ] = (1 - \beta\delta)^{n}$$
+set $n\delta$ as x
+$$P[I > x ] = (1 - \frac{\beta*x}{n})^{n}$$
+as n goes to $\infty$
+$$P[I > x ] = e^{-\beta*x}$$
+\subsubsection{Exponential distribution}
+The PDF is
+$$P[I = x ] = \beta*e^{-\beta*x}$$
+The mean or expected value of the distribution is 
+$$E[x] = \frac{1}{\beta}$$
+This distribution satisfies memoryless property
+$$P(X>t+s | X>t)=P(X>s)$$
+This property states that the probability of the random variable X exceeding a given threshold t+s, given that it has already exceeded t, is equal to the probability of X exceeding s. \\
+From this we can conclude that when the transaction is broadcasted to the miners we should wait for $\frac{1}{\beta}$ which is roughly 10 minutes.
+\subsubsection{Poisson arrival process}
+The number of blocks created in an interval of T is suprisingly poisson distribution given as 
+$$P\left( A_{T} = n \right) = \frac{{e^{ - \beta*t } (\beta *t) ^n }}{{n!}}$$
+\subsection{ 51\% Attack}
+let P be the fraction of hashing power with honest miners, $q = 1 - p $ be the hashing power with attackers, if $q > 0.5$ then attacker can always kill the chain of honest block.This attack is know as 51\% attack. \\
+The naive solution of this attack is to crete checkpoints is that slect a block which is deep enough in the chain must be present in the chain always, checkpoints are updated during a period of time. \\
+It is very difficult to acheive more than 50\% of hashing power.
+if attacker creates after time y and honest miner after x then probabilty of attacker winning the game is:
+\begin{align*}
+    P[y < x] &= \int_{0}^{\infty} (1-e^{-\beta*q*x})\beta*p*e^{-\beta*p*x} \, dx\\
+      &= \int_{0}^{\infty}\beta*p*e^{-\beta*p*x} \, dx - \int_{0}^{\infty} \beta*p*e^{-\beta*x} \, dx \\
+      &= 1 - p \\
+      & = q
+\end{align*}
 \end{document}
