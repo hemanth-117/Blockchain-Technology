@@ -599,7 +599,7 @@ $$\frac{r_{pool}}{r_{pool}+r_{others}} = \frac{A}{A + H}$$
 $$r_{others} = P_{0^{'}}*(1-\alpha)*\gamma + P_{0^{'}}*(1-\alpha)*(1-\gamma)*2 + P_{0}*(1-\alpha)$$
 $$r_{pool} = P_{0^{'}}*(1-\alpha)*\gamma + P_{0^{'}}*2*\gamma + P_{2}*(1-\alpha)*2 + \sum_{2}^{\infty}P_{i}*\alpha$$
 $$R_{pool} = \frac{A}{A + H}$$
-$$R_{pool} = \frac{\alpha*(1-\alpha)^{2}*(4*\alpha + \gamma(1-2*\alpha))-\alpha^{3}}{1-\alpha*(1+(2-\alpha)*\alpha}$$
+$$R_{pool} = \frac{\alpha*(1-\alpha)^{2}*(4*\alpha + \gamma(1-2*\alpha))-\alpha^{3}}{1-\alpha*(1+(2-\alpha))*\alpha}$$
 Where $\alpha$ is hashing power of attackers pool and $\gamma$ is the fraction of honest miners who follow attackers after releasing attackers chain. \\
 In the context of Bitcoin, a mining pool is a group of miners who come together to combine their computing power and resources in order to increase their chances of successfully mining new blocks and earning Bitcoin rewards. Here's how a mining pool typically operates:
 \begin{enumerate}
@@ -615,4 +615,109 @@ In the context of Bitcoin, a mining pool is a group of miners who come together 
 
 \item Continuous mining: Miners in the pool continue to receive new hash puzzles and work on solving them to find more blocks and earn rewards.
 \end{enumerate}
+\section{Proof Of Stake}
+\subsection{Sybil attack}
+In a blockchain, a Sybil attack involves an attacker claims to have more hashing power than what he actually have. \\
+In proof of work Sybil attack cannot be performed because someone cannot fake real time work done by them, but the problem with proof of work is it consumes more energy.\\
+Proof of stake(PoS) is a consensus protocol unlike Proof of Work (PoW), which relies on miners solving complex mathematical puzzles, PoS selects validators to create and validate new blocks based on the amount of cryptocurrency they hold and "stake" as collateral.\\ 
+Proof of work uses hash of previous block, nonce(IV), timestamp(T), merkle root of the transactions(MR) to solve the puzzle as follows,
+\begin{equation*}
+    Hash(Hash(B_{k}),IV,T,MR, ....) < Threshold
+\end{equation*}
+Proof of stake uses the hash of previous block, public key(a), balance with a, timestamp and merkle root is not included, but the threshold is varied for miners because people with more stake should have more chance, also timestamp should be near to local time. \\
+\begin{equation*}
+    Hash(Hash(B_{k}),a,T, ....) < Threshold*balance(a)
+\end{equation*}
+\subsection{Nothing at stake}
+The "nothing at stake" problem is a concern in Proof of Stake (PoS) blockchains where validators have no financial disincentive to support multiple conflicting forks. Since PoS validators are not required to spend computational resources to mine blocks, they can potentially support all competing chains simultaneously. This lack of economic cost removes the incentive to converge on a single valid chain, leading to a lack of consensus. To mitigate this problem, PoS protocols implement penalties or slashing conditions to discourage validators from supporting multiple forks, ensuring network stability and security.
+\begin{figure}
+\centering
+  \begin{tikzpicture}[node distance=2cm, auto]
+    % Nodes
+    \node [draw, rectangle, fill=blue!20] (block1) {$B_1$};
+    \node [draw, rectangle, fill=blue!20, right of=block1] (block2) {$B_2$};
+    \node [draw, rectangle, fill=blue!20, right of=block2] (block3) {$B_3$};
+    \node [draw, rectangle, fill=blue!20, right of=block3] (block4) {$B_4$};
+
+    \node [draw, rectangle, fill=blue!20, below of=block2] (a2) {$B_2$};
+    \node [draw, rectangle, fill=blue!20, right of=a2] (a3) {$B_3$};
+    \node [draw, rectangle, fill=blue!20, right of=a3] (a4) {$B_4$};
+    \node [draw, rectangle, fill=blue!20, right of=a4] (a5) {$B_5$};
+    \node [draw, rectangle, fill=blue!20, below of=a3] (b2) {$B_3$};
+    \node [draw, rectangle, fill=blue!20, right of=b2] (b3) {$B_4$};
+    \node [draw, rectangle, fill=blue!20, right of=b3] (b4) {$B_5$};
+    \node [draw, rectangle, fill=blue!20, right of=b4] (b5) {$B_6$};
+    % Arrows
+    \draw [->] (block1) -- (block2);
+    \draw [->] (block2) -- (block3);
+    \draw [->] (block3) -- (block4);
+    \draw [->] (block1) -- (a2);
+    \draw [->] (a2) -- (a3);
+    \draw [->] (a3) -- (a4);
+    \draw [->] (a4) -- (a5);
+    \draw [->] (a2) -- (b2);
+    \draw [->] (b2) -- (b3);
+    \draw [->] (b3) -- (b4);
+    \draw [->] (b4) -- (b5);
+  \end{tikzpicture}
+  \caption{Nothing at stake attack}
+\end{figure}
+\subsection{Long range attack}
+A long-range attack is a security concern in blockchain systems, where an attacker attempts to rewrite the entire blockchain's history. By possessing a significant amount of stake or historical data, the attacker creates an alternative chain from an earlier point in time to surpass the current valid chain. This can invalidate previous transactions and compromise the integrity of the network as shown in figure 7.
+\begin{figure}
+\centering
+  \begin{tikzpicture}[node distance=2cm, auto]
+    % Nodes
+    \node [draw, rectangle, fill=blue!20] (block1) {$B_1$};
+    \node [draw, rectangle, fill=blue!20, right of=block1] (block2) {$B_2$};
+    \node [draw, rectangle, fill=blue!20, right of=block2] (block3) {$B_3$};
+    \node [draw, rectangle, fill=blue!20, right of=block3] (block4) {$B_4$};
+
+    \node [draw, rectangle, fill=red!20, below of=block2] (a2) {$A_2$};
+    \node [draw, rectangle, fill=red!20, right of=a2] (a3) {$A_3$};
+    \node [draw, rectangle, fill=red!20, right of=a3] (a4) {$A_4$};
+    \node [draw, rectangle, fill=red!20, right of=a4] (a5) {$A_5$};
+
+    % Arrows
+    \draw [->] (block1) -- (block2);
+    \draw [->] (block2) -- (block3);
+    \draw [->] (block3) -- (block4);
+    \draw [->] (block1) -- (a2);
+    \draw [->] (a2) -- (a3);
+    \draw [->] (a3) -- (a4);
+    \draw [->] (a4) -- (a5);
+  \end{tikzpicture}
+  \caption{Long range attack killing blue chain after $B_1$}
+\end{figure}
+HAs stake goes up so attacker might approach real time in creating blocks i.e creating bloks at every 10 minutes and he can easily kill the entire chain easily.
+\subsection{Initial distribution problem}
+The initial distribution problem in Proof of Stake (PoS) refers to the challenge of fairly allocating cryptocurrency among participants at the launch of a PoS blockchain. Concentration of stake by early adopters can lead to centralization and disproportionate control. Strategies like fair token distribution and airdrops are used to promote decentralization and prevent dominance by a few stakeholders.
+\subsection{Bribe attack}
+A bribe attack is a type of attack where an adversary attempts to manipulate the behavior of participants in a blockchain network by offering them incentives or bribes. The attacker aims to persuade participants to act in a way that benefits the attacker's interests. This attack can undermine the integrity and security of the blockchain consensus. Countermeasures include promoting transparency, strong governance mechanisms, and encouraging participants to act in the best interest of the network rather than personal gain.
+\subsection{Pre computing attack}
+A pre-computing attack in Proof of Stake (PoS) refers to a potential attack where an adversary tries to gain an unfair advantage by pre-computing a large number of block proposals or validations before they are actually required. By pre-computing blocks as he can change the transaction anytime in previous block, the attacker can quickly gain control over the blockchain and influence the consensus process.
+\section{Hybrid PoW and PoS consensus}
+Use proof of work but not too much of energy i.e don't use proof of work in every block, also use proof of stake for consensus protocol.
+The proposed hybris solution is use PoW after every N blocks in between use Pos as shown in figure 8. \\
+\begin{figure}
+\centering
+  \begin{tikzpicture}[node distance=2cm, auto]
+    % Nodes
+    \node [draw, rectangle, fill=green!20] (block1) {$PoW_{0}^1$};
+    \node [draw, rectangle, fill=blue!20, right of=block1] (block2) {$PoS_{1}^2$};
+    \node [draw, rectangle, fill=blue!20, right of=block2] (block3) {$PoS_{2}^3$};
+    \node [draw, rectangle, fill=blue!20, right of=block3] (block4) {$PoS_{3}^4$};
+    \node [draw, rectangle, fill=blue!20, right of=block4] (block5) {$PoS_{N-1}^N$};
+    \node [draw, rectangle, fill=green!20, right of=block5] (block6) {$PoW_{N}^{N+1}$};
+
+    % Arrows
+    \draw [->] (block1) -- (block2);
+    \draw [->] (block2) -- (block3);
+    \draw [->] (block3) -- (block4);
+    \draw [dotted] (block4) -- (block5);
+    \draw [->] (block5) -- (block6);
+  \end{tikzpicture}
+  \caption{Hybrid solution}
+\end{figure}
+By using this the PoW energy per unit time is changed to $\frac{M}{NT}$ from $\frac{M}{T}$ where M is mining fee per block and T ia average time per creating a block.
 \end{document}
