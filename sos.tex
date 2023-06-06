@@ -393,7 +393,7 @@ If attacker is behind the honest miners he should try create more blocks to kill
     \draw [->] (block1) -- (block2);
     \draw [->] (block2) -- (block3);
     \draw [->] (block3) -- (block4);
-    \draw [->] (block1) -- (a2);
+    \draw [->] (block1) -- (a2);mining on his block
     \draw [->] (a2) -- (a3);
     \draw [dotted] (block4) -- (a3);
   \end{tikzpicture}
@@ -479,4 +479,140 @@ Q_{Z} =
 \end{cases}
 \]
 The above $Q_{Z}$ is only true if $ q < p $, else $Q_{Z}$ is always 1 which leads to 51\% attack.
+\section{Selfish mining}
+Selfish mining is a strategy where a miner intentionally withholds mined blocks to gain a competitive advantage and disrupt the fairness of the blockchain network. To perform selfish mining we should have an reasonable amount of hashing power.
+\subsection{Majority is not enough}
+This attack was analysed by Eyal and Siral around 2015. \\
+If the block is created by honest miner before attacker creates a block, all the miners including attackers starts mining on this block as shown in figure 3.\\
+\begin{figure}
+\centering
+  \begin{tikzpicture}[node distance=1cm, auto]
+    % Nodes
+    \node [draw, rectangle, fill=green!20] (block1) {$B_1$};
+    \node [draw, rectangle, fill=blue!20, right of=block1] (block2) {$B_2$};
+    % Arrows
+    \draw [->] (block1) -- (block2);
+  \end{tikzpicture}
+  \caption{honest miners creates first}
+\end{figure}
+If the attacker creates he waits and if the honest miner also creates some time after, if attacker has no lead he releases the block which leads all the attackers and some fraction of honest miners mining on his block, remaining fraction on honest block, as shown in figure 4.
+If $B_3$ is created first attacker chain is killed, similarly if $b_3$ or $A_3$ is created the honest miners chain is killed.\\ 
+\begin{figure}
+\centering
+  \begin{tikzpicture}[node distance=1cm, auto]
+    % Nodes
+    \node [draw, rectangle, fill=green!20] (block1) {$B_1$};
+    \node [draw, rectangle, fill=blue!20, right of=block1] (block2) {$B_2$};
+    \node [draw, rectangle, fill=blue!20, right of=block2] (block3) {$B_3$};
+    \node [draw, rectangle, fill=red!20, below of=block2] (a2) {$A_2$};
+    \node [draw, rectangle, fill=red!20, right of=a2] (a3) {$A_3$};
+    \node [draw, rectangle, fill=blue!20, below of=a2] (b3) {$b_3$};
+    \draw [->] (block1) -- (block2);
+    \draw [dotted] (block2) -- (block3);
+    \draw [->] (block1) -- (a2);
+    \draw [dotted] (a2) -- (b3);
+    \draw [dotted] (a2) -- (a3);
+  \end{tikzpicture}
+  \caption{attacker and honest miners release simultaneously}
+\end{figure}
+So if attacker had a lead 2 or more he waits until lead becomes 1 and releases the chain and kill the honest chain, each attacker block gets lead but not the honest blocks in this case attacker releases the chain as $B_4a$ was created before $A_6$ as shown in figure 5.
+\begin{figure}
+\centering
+  \begin{tikzpicture}[node distance=1cm, auto]
+    % Nodes
+    \node [draw, rectangle, fill=green!20] (block1) {$B_1$};
+    \node [draw, rectangle, fill=blue!20, right of=block1] (block2) {$B_2$};
+    \node [draw, rectangle, fill=blue!20, right of=block2] (block3) {$B_3$};
+    \node [draw, rectangle, fill=blue!20, right of=block3] (block4) {$B_4$};
+
+    \node [draw, rectangle, fill=red!20, below of=block2] (a2) {$A_2$};
+    \node [draw, rectangle, fill=red!20, right of=a2] (a3) {$A_3$};
+    \node [draw, rectangle, fill=red!20, right of=a3] (a4) {$A_4$};
+    \node [draw, rectangle, fill=red!20, right of=a4] (a5) {$A_5$};
+    % Arrows
+    \draw [->] (block1) -- (block2);
+    \draw [->] (block2) -- (block3);
+    \draw [->] (block3) -- (block4);
+    \draw [->] (block1) -- (a2);
+    \draw [->] (a2) -- (a3);
+    \draw [->] (a3) -- (a4);
+    \draw [->] (a4) -- (a5);
+    \draw [dotted] (block4) -- (a5);
+  \end{tikzpicture}
+  \caption{all the attacker blocks get into the chain}
+\end{figure}
+\newpage
+\subsection{Markov chain}
+\begin{tikzpicture}[->,>=stealth,shorten >=1pt,auto,node distance=2.5cm,semithick]
+    \node[state,circle] (0) {$0$};
+    \node[state,circle] (0*) [above of=0]{$0^{'}$};
+    \node[state,circle] (1)[right of=0] {$1$};
+  \node[state,circle] (2) [right of=1]{$2$};
+  \node[state,circle] (3) [right of=2] {$3$};
+  \node[state,circle] (4) [right of=3] {$4$};
+  \node[state,circle] (5) [right of=4] {$\infty$};
+  \path (2) edge [bend left] node {$\alpha$} (3)
+        (0) edge [loop left] node {$1-\alpha$} (0)
+        (0) edge [bend left] node {$\alpha$} (1)
+        (1) edge [bend left] node {$\alpha$} (2)
+        (0*) edge [bend left] node {$\delta$} (0)
+        (0*) edge [bend right] node {$\beta$} (0)
+        (0*) edge  node {$\alpha$} (0)
+        (1) edge [bend right] node {1-$\alpha$} (0*)
+        (3) edge [bend left] node {1-$\alpha$} (2)
+        (2) edge [bend left] node {1-$\alpha$} (0)
+        (3) edge [bend left] node {$\alpha$} (4)
+        (4) edge [bend left] node {1-$\alpha$} (3)
+        (4) edge [dotted] (5);
+\end{tikzpicture}
+$$\beta = (1-\alpha)(1-\gamma)$$
+$$\delta = (1-\alpha)\gamma$$
+According to the paper attacker gets one block in each $(i,i+1)$, 2 blocks in (2,0) state change, honest miner may get 1,2 or 0 blocks in $(0^{'},0)$ state change depending on who creates the block.
+\subsection{Discrete time markove chain analysis}
+\begin{center}
+ \begin{tikzpicture}[>=stealth, auto, node distance=2cm, on grid, semithick, every state/.style={minimum size=1cm}]
+  \node[state] (A) {K};
+  \node[state] (B) [right=of A] {k+1};
+  
+  \path[->] (A) edge[bend right] node {$\alpha$} (B);
+  \path[->] (B) edge[bend right] node {$1-\alpha$} (A);
+
+  \draw[dotted] (1,-2) -- (1,2); % Vertical dotted line
+\end{tikzpicture} 
+\end{center}
+From the above figure if we make an vertical cut the flow should be equal from both sides in steady state so for $k \geq 2$,
+$$P_{k}*\alpha = P_{k+1}*(1-\alpha)$$
+make cut between 1 and $0^{'}$, 0 and 1,
+$$P_{0^{'}} = P_{1}*(1-\alpha)$$
+$$P_{0} = (P_{1}+ P_{2})*(1-\alpha)$$
+on solving,
+$$P_{0} = \frac{\alpha - 2*\alpha^{2}}{\alpha*(2*\alpha^{3} - 4*\alpha^{2} + 1)}$$
+$$P_{0^{'}} = \frac{(1-\alpha)*(\alpha - 2*\alpha^{2})}{2*\alpha^{3} - 4*\alpha^{2} + 1}$$
+$$P_{1} = \frac{\alpha - 2*\alpha^{2}}{2*\alpha^{3} - 4*\alpha^{2} + 1}$$
+for all $k \geq 2$,
+$$P_{k} = (\frac{\alpha}{1-\alpha})^{k-1}*(\frac{\alpha - 2*\alpha^{2}}{2*\alpha^{3} - 4*\alpha^{2} + 1})$$
+\subsection{Rewards}
+$r_{pool}$ is defined as ratio of number of attacker blocks entered(A) int to final chain to the sum of all blocks generated by attacker($A_0$) and honest miners($H_0$). \\
+$$r_{pool} = \frac{A}{A_0 + H_0}$$
+$$r_{others} = \frac{H}{A_0 + H_0}$$
+$$\frac{r_{pool}}{r_{pool}+r_{others}} = \frac{A}{A + H}$$
+$$r_{others} = P_{0^{'}}*(1-\alpha)*\gamma + P_{0^{'}}*(1-\alpha)*(1-\gamma)*2 + P_{0}*(1-\alpha)$$
+$$r_{pool} = P_{0^{'}}*(1-\alpha)*\gamma + P_{0^{'}}*2*\gamma + P_{2}*(1-\alpha)*2 + \sum_{2}^{\infty}P_{i}*\alpha$$
+$$R_{pool} = \frac{A}{A + H}$$
+$$R_{pool} = \frac{\alpha*(1-\alpha)^{2}*(4*\alpha + \gamma(1-2*\alpha))-\alpha^{3}}{1-\alpha*(1+(2-\alpha)*\alpha}$$
+Where $\alpha$ is hashing power of attackers pool and $\gamma$ is the fraction of honest miners who follow attackers after releasing attackers chain. \\
+In the context of Bitcoin, a mining pool is a group of miners who come together to combine their computing power and resources in order to increase their chances of successfully mining new blocks and earning Bitcoin rewards. Here's how a mining pool typically operates:
+\begin{enumerate}
+\item Miners join the pool: Individual miners join a mining pool by connecting their mining hardware (such as specialized computers called ASICs) to the pool's mining server.
+
+\item Solving hash puzzles: The mining pool's server assigns computational tasks to the connected miners, typically in the form of hash puzzles.
+
+\item Work distribution: The pool's server distributes different variations of the hash puzzle to the connected miners.
+
+\item Finding a block: Once a miner in the pool successfully solves a hash puzzle, they broadcast the solution to the pool's server.
+
+\item Distribution of rewards: Rewards are distributed among pool participants based on the proportion of hashing power they contributed.
+
+\item Continuous mining: Miners in the pool continue to receive new hash puzzles and work on solving them to find more blocks and earn rewards.
+\end{enumerate}
 \end{document}
