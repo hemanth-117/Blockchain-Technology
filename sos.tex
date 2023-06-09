@@ -699,6 +699,7 @@ A pre-computing attack in Proof of Stake (PoS) refers to a potential attack wher
 \section{Hybrid PoW and PoS consensus}
 Use proof of work but not too much of energy i.e don't use proof of work in every block, also use proof of stake for consensus protocol.
 The proposed hybris solution is use PoW after every N blocks in between use Pos as shown in figure 8. \\
+By using this the PoW energy per unit time is changed to $\frac{M}{NT}$ from $\frac{M}{T}$ where M is mining fee per block and T ia average time per creating a block.
 \begin{figure}
 \centering
   \begin{tikzpicture}[node distance=2cm, auto]
@@ -719,5 +720,108 @@ The proposed hybris solution is use PoW after every N blocks in between use Pos 
   \end{tikzpicture}
   \caption{Hybrid solution}
 \end{figure}
-By using this the PoW energy per unit time is changed to $\frac{M}{NT}$ from $\frac{M}{T}$ where M is mining fee per block and T ia average time per creating a block.
+\section{SLASHER}
+The concept of "slasher" was proposed by Vitalik Buterin, the co-founder of Ethereum. Slasher is a type of consensus mechanism that was introduced as an alternative to the traditional Proof-of-Work (PoW) algorithm used by Bitcoin. Slasher focuses on penalizing validators who act dishonestly or attempt to manipulate the blockchain.\\
+Reducing mining reward which could potentially reduce the overall computational power and energy consumption required for mining operations. \\
+In slasher each valid block is signed by some group of people selected by proof osf stake beforehand and created by proof of work, so double spend attack is non trivial as attacker should create blocks with PoW and should have signatures. \\
+As shown in figure 9 the blocks are signed by designated signers after the creation of the block, if any person signs multiple blocks at the same level of the fork he will be penalized. \\
+All the signers selected by PoS has to deposit stake for some duration. The stake is frozen during the time i.e from $B_k$ to $B_{k+n}$ block. If anyone cheats during the time the stake is confiscated by creating a punishment transaction which involves some part to the user who created the transaction, miner who includes the transaction as shown in figure 10.
+$\alpha, \beta$ are in range $(0,1)$ so the part of money paid to shared key 0 is burnt.
+\begin{figure}
+\centering
+\begin{tikzpicture}[node distance=2cm, auto]
+  % Nodes
+  \node [draw, rectangle, fill=blue!20] (block1) {$B_{k}$};
+  \node [draw, rectangle, fill=blue!20, right of=block1] (block2) {$B_{k+1}$};
+  \node [draw, rectangle, fill=blue!20, above right of=block2] (block3) {$B_{k+2}$};
+  \node [draw, rectangle, fill=blue!20, below right of=block2] (block4) {$B_{k+2}$};
+
+  % Circles
+  \foreach \node in {block1, block2, block3, block4}
+    \draw [green] (\node) circle (0.5cm);
+
+  % Arrows
+  \draw [->] (block1) -- (block2);
+  \draw [->] (block2) -- (block3);
+  \draw [->] (block2) -- (block4);
+\end{tikzpicture}
+\caption{Signing the blocks}
+\end{figure}
+\begin{figure}
+    \centering
+\begin{center}
+\begin{tikzpicture}[>={Latex[scale=1]}]
+  %% Encoder
+  \node (naveq) [naveqs] {Transaction};
+  %% Inputs
+  \draw[<-] ($(naveq.south west)!0.5!(naveq.north west)$) -- +(-\edgedist,0) node [left] {$PK^{i}_0$}
+  node[midway,above] {$X$};;
+  %% Outputs
+  \draw[->] ($(naveq.south east)!0.6!(naveq.north east)$) -- +(\edgedist,0) node [right] {$PK^{o}_0$} node[midway,above] {$\alpha*X$};
+  \draw[->] ($(naveq.south east)!0.3!(naveq.north east)$) -- +(\edgedist,0) node [right] {$0$} node[midway,below] {$(1-\beta)*\alpha*X$};
+\end{tikzpicture}
+\end{center}
+    \caption{punishment transaction}
+\end{figure}
+\begin{figure}
+\centering
+\begin{tikzpicture}[node distance=2cm, auto]
+  % Nodes
+  \node [draw, rectangle, fill=blue!20] (block0) {$B_{k-n}$};
+  \node [draw, rectangle, fill=blue!20, right of =block0] (block1) {$B_{k}$};
+  \node [draw, rectangle, fill=blue!20, right of=block1] (block2) {$B_{k+1}$};
+  \node [draw, rectangle, fill=blue!20, above right of=block2] (block3) {$B_{k+2}$};
+  \node [draw, rectangle, fill=blue!20, below right of=block2] (block4) {$B_{k+2}$};
+  \node [draw, rectangle,  right of=block3] (block5) {$C_{1}$};
+  \node [draw, rectangle,  right of=block4] (block6) {$C_2$};
+
+  % Circles
+  \foreach \node in {block0, block1, block2, block3, block4}
+    \draw [green] (\node) circle (0.5cm);
+
+  % Arrows
+  \draw[dotted](block0) -- (block1);
+  \draw [->] (block1) -- (block2);
+  \draw [->] (block2) -- (block3);
+  \draw [->] (block2) -- (block4);
+  \draw [->] (block3) -- (block5);
+  \draw [->] (block4) -- (block6);
+\end{tikzpicture}
+\caption{selecting multiple committee at forks}
+\end{figure}
+\subsection{Rules for signing}
+A group signers are selected for signing $B_{K+M}$ at $B_{K}$ using proof of stake, assuming that a large number of these signers are honest, a block is valid if and only if it has at least $\frac{2}{3}$ group signatures, the group is called as committee to sign.
+\subsection{Choosing the committee}
+If the committee for $B_{k}$ is selected as $B_{k-1}$ there is a chance of selecting two committee if a fork is present as shown in figure 11, so we go deep into the block chain and select the committee as there is a less chance that there is a long fork from the deep enough block.
+\subsection{Slasher rules}
+\begin{itemize}
+    \item Blocks are mined using PoW, mining reward decreases by a factor of 50 every year.
+    \item Every block has set of designated signers choosed beforehand.
+    \item A block is valid if it has more than $\frac{2}{3}$ of signatures from the designated signers.
+\end{itemize}
+\subsection{Potential signers}
+When $B_k$ is produced the potential signers of block $B_{k+3000}$ are those with address a,
+$$Hash(a, Hash(B_k)) < bal(a)*Target$$
+we need about 15 potential signers to volunteer to become designated signers, so Target is adjusted such that abou 15 people volunteer every time.
+\begin{figure}
+\centering
+\begin{tikzpicture}[node distance=2cm, auto]
+  % Nodes
+  \node [draw, rectangle, fill=blue!20] (block0) {$B_{k}$};
+  \node [draw, rectangle, fill=blue!20, right of =block0] (block1) {$B_{k+1}$};
+  \node [draw, rectangle, fill=blue!20, right of=block1] (block2) {$B_{k+64}$};
+  \node [draw, rectangle, fill=blue!20, right of=block2] (block3) {$B_{k+3000}$};
+  % Arrows
+  \draw[->](block0) -- (block1);
+  \draw [dotted] (block1) -- node[above=0.5cm] {Volunteer Txn released} (block2);
+  \draw [dotted] (block2) -- node[below=0.5cm] {designators stake is frozen} (block3);
+\end{tikzpicture}
+\caption{designated signers selection}
+\end{figure}
+\section{Designated signers}
+Any potential signer of $B_{k+3000}$ can be a designated signer by sending a volunteer transaction between $B_{k+1}$ and $B_{k+64}$, the deposits are frozen from $B_{k+64}$ to $B_{k+6000}$ of the designated signers, there will be no signers fro first 300 blocks.
+\newpage
+what if none of the block has $\frac{2}{3}$ signatures or every block has more than $\frac{2}{3}$ signatures then miners should start mining on the parent block oby skipping the blocks. \\
+If they skip n blocks then the new threshold will be 
+$$Target = Target * 8 * 2^{n-1}$$
 \end{document}
