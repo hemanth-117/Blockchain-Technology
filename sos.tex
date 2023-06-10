@@ -820,8 +820,142 @@ we need about 15 potential signers to volunteer to become designated signers, so
 \end{figure}
 \section{Designated signers}
 Any potential signer of $B_{k+3000}$ can be a designated signer by sending a volunteer transaction between $B_{k+1}$ and $B_{k+64}$, the deposits are frozen from $B_{k+64}$ to $B_{k+6000}$ of the designated signers, there will be no signers fro first 300 blocks.
-\newpage
-what if none of the block has $\frac{2}{3}$ signatures or every block has more than $\frac{2}{3}$ signatures then miners should start mining on the parent block oby skipping the blocks. \\
+what if none of the block has $\frac{2}{3}$ signatures or every block has more than $\frac{2}{3}$ signatures then miners should start mining on the parent block by skipping the blocks at the same level. \\
 If they skip n blocks then the new threshold will be 
 $$Target = Target * 8 * 2^{n-1}$$
+\section{Anonimity}
+Blockchain provides pseudonymity, where users are identified by cryptographic addresses instead of personal information, but it is not inherently anonymous as transactions can be traced through blockchain analysis techniques.
+\subsection{Properties of unlinkability}
+\begin{itemize}
+    \item Hard to link different addresses of the same user.
+    \item Hard to link different transactions of the same user.
+    \item Hard to link sender and recipient of the same transaction.
+\end{itemize}
+\subsection{De-anonymization}
+If recipient address is well known then it is easy to track his all transaction as they are part of directed graph. To avoid this users always change their address at each transaction.
+\tikzstyle{sensor}=[draw, fill=blue!20, text width=5em, 
+text centered, minimum height=2.5em]
+\tikzstyle{ann} = [above, text width=6em]
+\tikzstyle{naveqs} = [sensor, text width=6em, fill=red!20, 
+minimum height=6em, rounded corners]
+\def\blockdist{2.3}
+\def\edgedist{1}
+\begin{center}
+\begin{tikzpicture}[>={Latex[scale=0.5]}]
+    %% Encoder (First Block)
+    \node (naveq) [naveqs] {Transaction 1};
+    %% Inputs
+    \draw[<-] ($(naveq.south west)!0.75!(naveq.north west)$) -- +(-\edgedist,0) node [left] {$P_{A}$} node [midway,above] {3};
+    \draw[<-] ($(naveq.south west)!0.25!(naveq.north west)$) -- +(-\edgedist,0) node [left] {$P_{C}$} node [midway,above] {5};
+
+    %% Decoder (Second Block)
+    \node (decoder) [naveqs, right=2cm of naveq] {Transaction 2};
+    \draw[->] ($(decoder.south east)!0.75!(decoder.north east)$) -- node[below] {$P_{D}$} node [midway,above] {6} ($(decoder.south east)!0.75!(decoder.north east) + (1.5cm,0)$);
+    \draw[->] ($(decoder.south east)!0.25!(decoder.north east)$) -- node[below] {$P_{B_{3}}$} node [midway,above] {2}($(decoder.south east)!0.25!(decoder.north east) + (1.5cm,0)$);
+
+    %% Connection between blocks
+    \draw[->] ($(naveq.south east)!0.75!(naveq.north east) + (-0.0625cm,0)$) -- node[above] {$P_{B_{1}}$}node [below] {3}($(decoder.south west)!0.75!(decoder.north west)$);
+    \draw[->] ($(naveq.south east)!0.25!(naveq.north east) + (-0.0625cm,0)$) -- node[above] {$P_{B_{2}}$}node [below] {5}($(decoder.south west)!0.25!(decoder.north west)$);
+\end{tikzpicture}
+\end{center}
+In the above transaction show we can easily know the $P_{B_{1}}$, $P_{B_{2}}$ belong to the same user as he is combining them to pay, some wallets by default generates a new change address and keeps it randomly among the outputs to fix this issue, but if there is only one new address among the output then one can de-anonymize them easily. \\
+\subsubsection{network de-anonymization}
+Network deanonymization in a P2P network means figuring out who is behind the network activities. It can be done through analyzing traffic patterns, creating fake identities, or tracking IP addresses.\\
+The Tor network and onion routing are used to enhance privacy by obscuring the origin and destination of network traffic, making it difficult to link Bitcoin transactions to specific individuals.
+\subsection{Tor network \& Onion routing}
+The Tor network is a decentralized network of volunteer-operated servers that routes internet traffic through multiple layers of encryption and relays to protect user privacy and anonymity.\\
+Onion routing is a technique employed by the Tor network where data is encrypted in multiple layers (like the layers of an onion) and routed through a series of relays, with each relay peeling off a layer of encryption, making it challenging to trace the source or destination of the traffic. This helps in preventing network deanonymization in Bitcoin by obscuring the true origin and destination of transactions.
+\section{Mixing}
+Mixing is done in blockchains to enhance privacy and anonymity. By mixing or combining transactions from different participants, we don't want a mapping between users and their addresses. \\
+\tikzstyle{sensor}=[draw, fill=blue!20, text width=5em, 
+text centered, minimum height=2.5em]
+\tikzstyle{ann} = [above, text width=6em]
+\tikzstyle{naveqs} = [sensor, text width=6em, fill=red!20, 
+minimum height=6em, rounded corners]
+\tikzstyle{naveqs1} = [sensor, text width=6em, fill=blue!20, 
+minimum height=10em, rounded corners]
+\def\blockdist{2.3}
+\def\edgedist{1}
+\begin{center}
+\begin{tikzpicture}[>={Latex[scale=0.5]}]
+    %% Encoder (First Block)
+    \node (naveq) [naveqs] {Transaction};
+    %% Inputs
+    \draw[<-] ($(naveq.south west)!0.5!(naveq.north west)$) -- +(-\edgedist,0) node [left] {$P_{Z}$} node [midway,above] {z};
+
+    %% Decoder (Second Block)
+    \node (decoder) [naveqs1, right=2cm of naveq] {Mixer};
+    \draw[->] ($(decoder.south east)!0.9!(decoder.north east)$) -- node[below] {$P_{A_{1}}$} node [midway,above] {$a_1$} ($(decoder.south east)!0.9!(decoder.north east) + (1.5cm,0)$);
+    \draw[->] ($(decoder.south east)!0.6!(decoder.north east)$) -- node[below] {$P_{A_{2}}$} node [midway,above] {$a_2$}($(decoder.south east)!0.6!(decoder.north east) + (1.5cm,0)$);
+    \draw[->] ($(decoder.south east)!0.3!(decoder.north east)$) -- node[below] {$P_{A_{3}}$} node [midway,above] {$a_3$}($(decoder.south east)!0.3!(decoder.north east) + (1.5cm,0)$);
+
+    %% Connection between blocks
+    \draw[->] ($(naveq.south east)!0.5!(naveq.north east) + (-0.0625cm,0)$) -- node[above] {$P_{A}$}node [below] {a}($(decoder.south west)!0.5!(decoder.north west)$);
+\end{tikzpicture}
+\end{center}
+In the above picture $P_A$ recieves some money a from $P_Z$, $P_A$ approaches the mixer to split it's money among the public keys provided by himself, mixer take cares that any person other than A know that theys addresses belong to A. We assume that mixers are honest and pay back the money.\\
+All the money from the users are shuffled and paid to their new addresses provided by them.
+\tikzstyle{sensor}=[draw, fill=blue!20, text width=5em, 
+text centered, minimum height=2.5em]
+\tikzstyle{ann} = [above, text width=6em]
+\tikzstyle{naveqs} = [sensor, text width=6em, fill=red!20, 
+minimum height=6em, rounded corners]
+\tikzstyle{naveqs1} = [sensor, text width=6em, fill=blue!20, 
+minimum height=10em, rounded corners]
+\def\blockdist{2.3}
+\def\edgedist{1}
+\begin{center}
+\begin{tikzpicture}
+  % Nodes
+  \node (A) at (0,0) {$P_A$};
+  \node (B) at (0,-2) {$P_B$};
+  \node (C) at (0,-4) {$P_C$};
+  \node (p_a) at (2,0) {$P_1$};
+  \node (p_b) at (2,-2) {$P_2$};
+  \node (p_c) at (2,-4) {$P_3$};
+  \node (a1) at (6,0) {$P_{A_1}$};
+  \node (b1) at (6,-2) {$P_{B_1}$};
+  \node (c1) at (6,-4) {$P_{C_1}$};
+  \node (a) at (4,0) {$.$};
+  \node (b) at (4,-2) {$.$};
+  \node (c) at (4,-4) {$.$};
+
+  % Blue rectangle
+   \fill[blue, opacity=0.2] ([shift={(-1,3)}]p_b.center) rectangle ([shift={(2,-3)}]p_b.center);
+
+  % Arrows
+  \draw[->] (A) -- (p_a) node [midway,above] {a};
+  \draw[->] (B) -- (p_b) node [midway,above] {b};
+  \draw[->] (C) -- (p_c) node [midway,above] {c};
+  \draw[dashed] (p_a) -- (b);
+  \draw[dashed] (p_a) -- (c);
+  \draw[dashed] (p_b) -- (a);
+  \draw[dashed] (p_b) -- (c);
+  \draw[dashed] (p_c) -- (a);
+  \draw[dashed] (p_c) -- (b);
+  \draw[->] (a) -- (a1) node [midway,above] {a};
+  \draw[->] (b) -- (b1) node [midway,above] {b};
+  \draw[->] (c) -- (c1) node [midway,above] {c};
+\end{tikzpicture}
+\end{center}
+In the above figure it shows how a mixer works, as shown if three members appear and the money is paid back as shown above so that there is no link between $P_A$, $P_{A_{1}}$.
+\subsection{Principles of mixing}
+\begin{itemize}
+    \item Use series of mixing to avoid side channel attacks, hope at least one mixer provides the anonymity.
+    \item Use the same bitcoin input to the mixer because attacker can track the money taken by all users and find them, the sixe accepted by the mixer is called chunk size.
+\end{itemize}
+As the mixer collects its mining fee and looses the transaction fee for creating many of them so the output is less than input, if some user wants series of mixing he has to add some money which is not a good idea because anonymity is lost again.\\
+So the solution for the above situation is "Fees are all or nothing", in this the mixture take everything from 1\% of number of the users of the mixer and compensates it to mixing, transaction fee, so there is 99\% chance of getting full back and 1\% chance of loosing everything.
+\subsection{Continual mixing}
+If a client visits a mixing service on days 1, 3, and 5, and creates three new keys before combining them to make a payment, there could be a risk of getting caught if someone has access to information about the client's visits to the mixing service, the solution for this is the clients wallet should go on mixing every day so that attacker cannot correlate those transactions.
+\subsection{Decentralized mixing}
+A group of themselves performs the mixing process by jumbling transactions together, enhancing privacy and anonymity using peer to peer network. They use coinjoin method to perform this.
+\subsubsection{Coinjoin}
+\begin{itemize}
+    \item Find peers who want to perform mixing.
+    \item Exchange input and output public keys.
+    \item Construct the transaction and send it around themselves to sign it.
+    \item Broadcast it to the miners.
+\end{itemize}
+While exchanging input and output address user should use multiple ip address or tor network to send them, both the input and output should not be sent at same time so anonymity is preserved.
 \end{document}
