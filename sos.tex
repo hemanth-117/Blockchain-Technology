@@ -269,11 +269,11 @@ The confirmation time in blockchain refers to the amount of time it takes for a 
   \begin{tikzpicture}[node distance=2cm, auto]
     % Nodes
     \node [draw, rectangle, fill=blue!20] (block1) {$B_1$};
-    \node [draw, rectangle, fill=blue!20, right of=block1] (block2) {$B_2$};
+    \node [draw, rectangle, fill=blue!20, above right of=block1] (block2) {$B_2$};
     \node [draw, rectangle, fill=blue!20, right of=block2] (block3) {$B_3$};
     \node [draw, rectangle, fill=blue!20, right of=block3] (block4) {$B_4$};
 
-    \node [draw, rectangle, fill=red!20, below of=block2] (a2) {$A_2$};
+    \node [draw, rectangle, fill=red!20, below right of=block1] (a2) {$A_2$};
     \node [draw, rectangle, fill=red!20, right of=a2] (a3) {$A_3$};
     \node [draw, rectangle, fill=red!20, right of=a3] (a4) {$A_4$};
     \node [draw, rectangle, fill=red!20, right of=a4] (a5) {$A_5$};
@@ -358,11 +358,11 @@ If attacker is behind the honest miners he should try create more blocks to kill
   \begin{tikzpicture}[node distance=1cm, auto]
     % Nodes
     \node [draw, rectangle, fill=blue!20] (block1) {$B_1$};
-    \node [draw, rectangle, fill=blue!20, right of=block1] (block2) {$B_2$};
+    \node [draw, rectangle, fill=blue!20, above right of=block1] (block2) {$B_2$};
     \node [draw, rectangle, fill=blue!20, right of=block2] (block3) {$B_3$};
     \node [draw, rectangle, fill=blue!20, right of=block3] (block4) {$B_4$};
 
-    \node [draw, rectangle, fill=red!20, below of=block2] (a2) {$A_2$};
+    \node [draw, rectangle, fill=red!20, below right  of=block1] (a2) {$A_2$};
     \node [draw, rectangle, fill=red!20, right of=a2] (a3) {$A_3$};
     \node [draw, rectangle, fill=red!20, right of=a3] (a4) {$A_4$};
     \node [draw, rectangle, fill=red!20, right of=a4] (a5) {$A_5$};
@@ -383,11 +383,11 @@ If attacker is behind the honest miners he should try create more blocks to kill
   \begin{tikzpicture}[node distance=1cm, auto]
     % Nodes
     \node [draw, rectangle, fill=blue!20] (block1) {$B_1$};
-    \node [draw, rectangle, fill=blue!20, right of=block1] (block2) {$B_2$};
+    \node [draw, rectangle, fill=blue!20, above right of=block1] (block2) {$B_2$};
     \node [draw, rectangle, fill=blue!20, right of=block2] (block3) {$B_3$};
     \node [draw, rectangle, fill=blue!20, right of=block3] (block4) {$B_4$};
 
-    \node [draw, rectangle, fill=red!20, below of=block2] (a2) {$A_2$};
+    \node [draw, rectangle, fill=red!20, below right of=block1] (a2) {$A_2$};
     \node [draw, rectangle, fill=red!20, right of=a2] (a3) {$A_3$};
     % Arrows
     \draw [->] (block1) -- (block2);
@@ -502,11 +502,11 @@ If $B_3$ is created first attacker chain is killed, similarly if $b_3$ or $A_3$ 
   \begin{tikzpicture}[node distance=1cm, auto]
     % Nodes
     \node [draw, rectangle, fill=green!20] (block1) {$B_1$};
-    \node [draw, rectangle, fill=blue!20, right of=block1] (block2) {$B_2$};
+    \node [draw, rectangle, fill=blue!20, above right of=block1] (block2) {$B_2$};
     \node [draw, rectangle, fill=blue!20, right of=block2] (block3) {$B_3$};
-    \node [draw, rectangle, fill=red!20, below of=block2] (a2) {$A_2$};
-    \node [draw, rectangle, fill=red!20, right of=a2] (a3) {$A_3$};
-    \node [draw, rectangle, fill=blue!20, below of=a2] (b3) {$b_3$};
+    \node [draw, rectangle, fill=red!20, below right of=block1] (a2) {$A_2$};
+    \node [draw, rectangle, fill=red!20, above right of=a2] (a3) {$A_3$};
+    \node [draw, rectangle, fill=blue!20, below right of=a2] (b3) {$b_3$};
     \draw [->] (block1) -- (block2);
     \draw [dotted] (block2) -- (block3);
     \draw [->] (block1) -- (a2);
@@ -521,11 +521,11 @@ So if attacker had a lead 2 or more he waits until lead becomes 1 and releases t
   \begin{tikzpicture}[node distance=1cm, auto]
     % Nodes
     \node [draw, rectangle, fill=green!20] (block1) {$B_1$};
-    \node [draw, rectangle, fill=blue!20, right of=block1] (block2) {$B_2$};
+    \node [draw, rectangle, fill=blue!20, above right of=block1] (block2) {$B_2$};
     \node [draw, rectangle, fill=blue!20, right of=block2] (block3) {$B_3$};
     \node [draw, rectangle, fill=blue!20, right of=block3] (block4) {$B_4$};
 
-    \node [draw, rectangle, fill=red!20, below of=block2] (a2) {$A_2$};
+    \node [draw, rectangle, fill=red!20, below right of=block1] (a2) {$A_2$};
     \node [draw, rectangle, fill=red!20, right of=a2] (a3) {$A_3$};
     \node [draw, rectangle, fill=red!20, right of=a3] (a4) {$A_4$};
     \node [draw, rectangle, fill=red!20, right of=a4] (a5) {$A_5$};
@@ -635,15 +635,15 @@ The "nothing at stake" problem is a concern in Proof of Stake (PoS) blockchains 
   \begin{tikzpicture}[node distance=2cm, auto]
     % Nodes
     \node [draw, rectangle, fill=blue!20] (block1) {$B_1$};
-    \node [draw, rectangle, fill=blue!20, right of=block1] (block2) {$B_2$};
+    \node [draw, rectangle, fill=blue!20, above right of=block1] (block2) {$B_2$};
     \node [draw, rectangle, fill=blue!20, right of=block2] (block3) {$B_3$};
     \node [draw, rectangle, fill=blue!20, right of=block3] (block4) {$B_4$};
 
-    \node [draw, rectangle, fill=blue!20, below of=block2] (a2) {$B_2$};
-    \node [draw, rectangle, fill=blue!20, right of=a2] (a3) {$B_3$};
+    \node [draw, rectangle, fill=blue!20, below right of=block1] (a2) {$B_2$};
+    \node [draw, rectangle, fill=blue!20, above right of=a2] (a3) {$B_3$};
     \node [draw, rectangle, fill=blue!20, right of=a3] (a4) {$B_4$};
     \node [draw, rectangle, fill=blue!20, right of=a4] (a5) {$B_5$};
-    \node [draw, rectangle, fill=blue!20, below of=a3] (b2) {$B_3$};
+    \node [draw, rectangle, fill=blue!20, below right of=a2] (b2) {$B_3$};
     \node [draw, rectangle, fill=blue!20, right of=b2] (b3) {$B_4$};
     \node [draw, rectangle, fill=blue!20, right of=b3] (b4) {$B_5$};
     \node [draw, rectangle, fill=blue!20, right of=b4] (b5) {$B_6$};
@@ -669,11 +669,11 @@ A long-range attack is a security concern in blockchain systems, where an attack
   \begin{tikzpicture}[node distance=2cm, auto]
     % Nodes
     \node [draw, rectangle, fill=blue!20] (block1) {$B_1$};
-    \node [draw, rectangle, fill=blue!20, right of=block1] (block2) {$B_2$};
+    \node [draw, rectangle, fill=blue!20, above right of=block1] (block2) {$B_2$};
     \node [draw, rectangle, fill=blue!20, right of=block2] (block3) {$B_3$};
     \node [draw, rectangle, fill=blue!20, right of=block3] (block4) {$B_4$};
 
-    \node [draw, rectangle, fill=red!20, below of=block2] (a2) {$A_2$};
+    \node [draw, rectangle, fill=red!20, below right of=block1] (a2) {$A_2$};
     \node [draw, rectangle, fill=red!20, right of=a2] (a3) {$A_3$};
     \node [draw, rectangle, fill=red!20, right of=a3] (a4) {$A_4$};
     \node [draw, rectangle, fill=red!20, right of=a4] (a5) {$A_5$};
@@ -958,4 +958,68 @@ A group of themselves performs the mixing process by jumbling transactions toget
     \item Broadcast it to the miners.
 \end{itemize}
 While exchanging input and output address user should use multiple ip address or tor network to send them, both the input and output should not be sent at same time so anonymity is preserved.
+\section{RAFT}
+\subsection{Replicated state machine}
+Replicated state machines are typically implemented
+using a replicated log. Each server
+stores a log containing a series of commands, which its
+state machine executes in order. Each log contains the
+same commands in the same order, so each state machine processes the same sequence of commands. Since
+the state machines are deterministic, each computes the
+same state and the same sequence of outputs. \\
+The consensus module on a server
+receives commands from clients and adds them to its log.
+It communicates with the consensus modules on other
+servers to ensure that every log eventually contains the
+same requests in the same order, even if some servers fail.
+Once commands are properly replicated, each server’s
+state machine processes them in log order, and the outputs are returned to clients.
+\subsection{Consensus}
+Raft implements consensus by first electing a distinguished leader, then giving the leader complete responsibility for managing the replicated log. The leader accepts
+log entries from clients, replicates them on other servers,
+and tells servers when it is safe to apply log entries to
+their state machines.
+Raft decomposes the consensus problem into two relatively independent subproblems,
+\begin{itemize}
+    \item \textbf{Leader election}: a new leader must be chosen when an
+existing leader fails.
+\item \textbf{Log replication}: the leader must accept log entries
+from clients and replicate them across the cluster, forcing the other logs to agree with its own.
+\end{itemize}
+Raft servers communicate using remote procedure calls
+(RPCs).
+\subsection{Leader election}
+Raft uses heartbeat to trigger leader election; servers start as followers. Followers stay in this state as long as they receive valid RPCs from a leader or candidate. Leaders send periodic heartbeats (AppendEntries RPCs with no log entries) to maintain authority. If a follower experiences an election timeout, it transitions to candidate state, increments its term, and votes for itself. The candidate issues RequestVote RPCs to other servers. The candidate remains in this state until it wins the election, another server becomes leader, or a timeout occurs.\\
+To win an election, a candidate must receive votes from a majority of servers in the cluster for the same term. Each server votes for at most one candidate in a term, following a first-come-first-served basis. The majority rule guarantees only one candidate can win the election for a specific term. When a candidate wins, it becomes the leader and sends heartbeats to establish authority and prevent new elections, if no one wins there will be another election after a timeout, term is increased after every election, term is also put in messages, term also increases if no candidate was elected.
+\subsection{Logs}
+Each log entry stores a state machine command along with the term
+number when the entry was received by the leader, log entry also has an integer index identifying its position in the log.
+\subsection{Log replication}
+After being elected, the leader handles client requests by appending the command to its log as a new entry. It then replicates the entry by sending parallel AppendEntries RPCs to the other servers. Once the entry is safely replicated, the leader applies it to its state machine and returns the execution result to the client,in the event of follower crashes, slow performance, or lost network packets, the leader persists in retrying AppendEntries RPCs indefinitely until all followers successfully store all log entries. \\
+A leader determines when it is safe to apply a log entry to the state machines, referred to as committed. Committed entries are guaranteed to be durable and eventually executed by all available state machines. An entry is considered committed when the leader has successfully replicated it on a majority of the servers. This commitment also applies to preceding entries in the leader's log, including those created by previous leaders.\\
+If any leader fails the new leader elected should have all the committed requests from the start, so while election candidates will send their log, others should vote him if their log is subset of it. Once the new leader is elected with atleast half of votes he updates others log by sending his log. \\
+To ensure coherency and safety, Raft maintains the Log Matching Property by guaranteeing that if two entries in different logs have the same index and term, they store the same command, and the logs are identical in all preceding entries. \\
+During normal operation, the logs of the leader and followers remain consistent, ensuring that the AppendEntries consistency check never fails. However, leader crashes can cause inconsistencies in the logs, as the old leader may not have fully replicated all entries. These inconsistencies can accumulate over multiple leader and follower crashes, resulting in followers having missing or extra entries compared to the new leader.\\
+To synchronize a follower's log with the leader's, the leader identifies the latest agreed-upon entry in both logs, deletes any entries in the follower's log after that point, and sends all its own entries from that point onwards to the follower. 
+\subsection{Timing and availability}
+Safety in Raft must not rely on timing, but availability does. Leader election is critical, and Raft requires that broadcastTime is much smaller than electionTimeout, which in turn is much smaller than MTBF. (broadcastTime $<< $electionTimeout $<<$ MTBF)
+\section{Byzantine Fault Tolerance}
+Since malicious attacks and software errors can cause faulty nodes to exhibit Byzantine (i.e., arbitrary) behavior, Byzantine-fault-tolerant algorithms are increasingly important.
+Let us assume there are n servers and see malicious and rational 
+as Byzantine rest are honest.
+\subsection{consensus requirements}
+\begin{itemize}
+    \item \textbf{Agreement}: all honest must reach same decision.
+    \item \textbf{Termination}: all honest must eventually make a decision.
+    \item \textbf{Validity}: if leader is honest, no matter what all other honest ones should follow the leader.
+\end{itemize}
+The algorithm offers both liveness and safety
+provided at most f out of a total of n replicas are simultaneously faulty. This means that clients eventually receive replies to their requests and those replies are correct according to linearizability. The algorithm works in asynchronous systems like the Internet and it
+incorporates important optimizations that enable it to
+perform efficiently. 
+After communicating with n-f replicas twice, since f replicas might be faulty and not responding, the minimum overlap between 
+them will be n-2f in the worst case f faulty replicas may be in this overlap so honest replicas are at least n-3f. so we can proove that 
+$$ f <= \lfloor \frac{n -1 }{3} \rfloor$$
+\section{Impossibility result}
+It is impossible to have a deterministic protocol that solves consensus in a message passing asynchronous system in which at most one procees may file by crashing.
 \end{document}
