@@ -1,9 +1,9 @@
 \documentclass{article}
-\title{Blockchain Technology SoS Reading Project}
+\title{Blockchain Technology SoS }
 
 \author{Pagoti Hemanth Naidu - 210050117 \\
 Mentor: Shikhar Agrawal}
-\date{may 2023}
+\date{june 2023}
 \usepackage{xcolor}
 \usepackage{graphicx}
 \usepackage{adjustbox}
@@ -1094,4 +1094,56 @@ The stages of PBFT and their corresponding steps:
     \item \textbf{Commit}: Replicas multicast Commit messages after receiving a sufficient number of valid Prepare messages, indicating the request's commitment by observing a quorum.
     \item \textbf{Reply}: Upon receiving f + 1 valid Commit messages, a replica executes the request, sends a Reply message to the client with the result, and considers the request committed.
 \end{itemize}
+\subsubsection{request}
+A client c requests the execution of state machine operation o by sending a $ \left\langle request, o, t, c \right\rangle_{\sigma_c} $ message to the primary. Timestamp t is used to ensure exactly once semantics for the execution of client requests.
+Timestamps for c’s requests are totally ordered such that
+later requests have higher timestamps than earlier ones.
+\subsubsection{reply}
+Replicas send messages with current view numbers to track the primary. The primary multicasts requests to backups atomically. \\
+A replica sends the reply to the request directly to the client. The reply has the form $ \left\langle REPLY, v, t, c, i, r \right\rangle_{\sigma_i} $ where v is the current view number, t is the timestamp of the corresponding request, i is the replica number, and r is the result of executing the requested operation.
+The client waits for f+1 replies with valid signatures
+from different replicas, and with the same t and r, before
+accepting the result r. This ensures that the result is valid,
+since at most f replicas can be faulty.
+\subsubsection{pre - prepare}
+In the pre-prepare phase, the primary assigns a
+sequence number, n , to the request, multicasts a pre-prepare message with m piggybacked to all the backups, and appends the message to its log. The message has the form $ \left \langle \langle PRE-PREPARE, v, n, d \right\rangle_{\sigma_p}, m \rangle $, where v indicates the view in which the message is being sent, m is the client’s request message, and d is m’s digest.
+A backup accepts a pre-prepare message provided:
+\begin{itemize}
+    \item the signatures in the request and the pre-prepare
+    message are correct and d is the digest for m.
+    \item it is in view v
+    \item it has not accepted a pre-prepare message for view v
+    and sequence number n containing a different digest
+    \item the sequence number in the pre-prepare message is
+    between a low water mark,h , and a high water mark, H.
+\end{itemize}
+\subsubsection{prepare}
+Replica's enters the prepare phase by multicasting a $\left\langle PREPARE, v, n, d, i \right\rangle_{\sigma_i} $ message to all other replicas and adds both messages to its log. Otherwise,it does nothing. \\
+A replica accepts prepare messages for its log if they meet the criteria of correct signatures, matching view numbers, and valid sequence numbers. \\
+We define the predicate prepared(m, v, n, i) to be true
+if and only if replica i has inserted in its log: the request
+m, a pre-prepare for m in view with sequence number n, and 2f prepares from different backups that match the pre-prepare. \\
+If prepared(m, v, n, i) is true then prepared($m^{'}$, v, n, j) is false for any non-faulty replica (including i=j) and any $m^{'}$ such that $D(m) \neq D(m^{'}$. This is true because prepared(m, v, n, i) and $|R|$ = 3f+1 imply that at least f+1 non-faulty replicas
+have sent a pre-prepare or prepare for m in view v with
+sequence number n. Thus, for prepared($m^{'}, v, n, j$)
+to be true at least one of these replicas needs to have
+sent two conflicting prepares, i.e., two prepares with the same view and sequence number and a different digest. But this is
+not possible because the replica is not faulty. Finally, our
+assumption about the strength of message digests ensures
+that the probability that $m = m^{'}$ and $D(m) = D(m^{'}$is
+negligible.
+\subsubsection{Commit}
+Replica i multicasts a $\left\langle COMMIT, v, n, D(m), i \right\rangle_{\sigma_i} $ to the other replicas when prepared(m, v, n, i) becomes true. \\
+committed(m, v, n) is true if and only
+if prepared(m, v, n, i) is true for all i in some set of
+f+1 non-faulty replicas; and committed-local(m, v, n, i)
+is true if and only if prepared(m, v, n, i) is true and i has
+accepted 2f+1 commits from different replicas that match the pre-prepare for m, if committed-local(m, v, n, i) is true for some non-faulty then committed(m, v, n) is true. \\
+This ensures that all nonfaulty replicas execute requests in the same order as
+required to provide the safety property. After executing
+the requested operation, replicas send a reply to the client.
+Replicas discard requests whose timestamp is lower than
+the timestamp in the last reply they sent to the client to
+guarantee exactly-once semantics.
 \end{document}
