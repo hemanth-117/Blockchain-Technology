@@ -1146,4 +1146,17 @@ the requested operation, replicas send a reply to the client.
 Replicas discard requests whose timestamp is lower than
 the timestamp in the last reply they sent to the client to
 guarantee exactly-once semantics.
+\section{Payment channel networks}
+The Lightning Network is a payment channel network built on top of a blockchain that enables fast and scalable transactions by conducting them off-chain. \\
+Two participants create a ledger entry on the blockchain which requires both participants to sign off on any spending of funds. Both parties create transactions which refund the ledger entry to their individual allocation, but do not broadcast them to the blockchain. They can update their individual allocations for the ledger entry by creating many transactions spending from the current ledger entry output.\\
+In the Lightning Network's mesh network of payment channels, participants open channels on the blockchain, conduct off-chain transactions, and update the channel balances using commitment transactions. Payments can be routed across the network, enabling trustless and atomic transfers without relying on the underlying blockchain for every transaction.\\
+\begin{figure}[t]
+\centering
+\includegraphics[width=6cm]{network.png}
+\caption{mesh network of payment channels}
+\end{figure}
+\subsection{Funding transaction}
+An initial channel Funding Transaction is created whereby one or both channel counterparties fund the inputs of this transaction. Both parties create the inputs and outputs for this transaction but do not sign the transaction.\\
+The output for this Funding Transaction is a single 2-of-2 multisignature script with both participants in this channel. Both participants do not exchange signatures for the Funding
+Transaction until they have created spends from this 2-of-2 output refunding the original amount back to its respective funders.
 \end{document}
